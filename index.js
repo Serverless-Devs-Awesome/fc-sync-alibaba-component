@@ -80,22 +80,26 @@ class SyncComponent extends Component {
       properties
     });
 
-    const project = _.cloneDeepWith(inputs.Project)
-    const projectName = project.ProjectName
-    delete project.ProjectName
-    if (project.AccessAlias) {
-      project.Access = project.AccessAlias
-      delete project.AccessAlias
-    }
-    const { ConfigPath } = inputs.Path || {}
-    const extname = path.extname(ConfigPath)
-    const basename = path.basename(ConfigPath, path.extname(ConfigPath))
-    const sourceConfig = yaml.safeLoad(fs.readFileSync(ConfigPath))
-    await fse.outputFile(`./.s/${basename}.source_config${extname}`, yaml.dump(sourceConfig))
+    // 保存源文件到缓存目录
+    const { ConfigPath } = inputs.Path || {};
+    const extname = path.extname(ConfigPath);
+    const basename = path.basename(ConfigPath, path.extname(ConfigPath));
+    const sourceConfig = yaml.safeLoad(fs.readFileSync(ConfigPath));
+    await fse.outputFile(`./.s/${basename}.source_config${extname}`, yaml.dump(sourceConfig));
 
-    sourceConfig[projectName] = { ...project, Properties: pro }
-    const u = args.Parameters.save ? path.resolve(process.cwd(), args.Parameters.save): ConfigPath
-    await fse.outputFile(u, yaml.dump(sourceConfig))
+    // 保存最新配置
+    const project = _.cloneDeepWith(inputs.Project);
+
+    const projectName = project.ProjectName;
+    delete project.ProjectName;
+    delete project.AccessAlias;
+    if (sourceConfig[projectName].Access) {
+      project.Access = sourceConfig[projectName].Access;
+    }
+
+    sourceConfig[projectName] = { ...project, Properties: pro };
+    const u = args.Parameters.save ? path.resolve(process.cwd(), args.Parameters.save): ConfigPath;
+    await fse.outputFile(u, yaml.dump(sourceConfig));
   }
 }
 

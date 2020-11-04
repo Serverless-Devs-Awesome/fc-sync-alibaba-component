@@ -2,14 +2,14 @@ Type: Component
 Name: fc-sync-alibaba-component
 Provider:
   - Alibaba
-Version: 0.0.1
+Version: 0.0.2
 Description: Serverless Devs 函数计算组件 sync 功能
 HomePage: https://github.com/Serverless-Devs
 Tags:
   - Alibaba fc
 Category: 基础云服务
 Commands:
-  metrics: 监控组建
+  sync: 同步配置和代码
 Properties:
   Region:
     Description: 地域
